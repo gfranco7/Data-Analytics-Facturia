@@ -3,46 +3,72 @@ import pandas as pd
 import os
 from sqlalchemy import create_engine
 
-# Crear un DataFrame vacío para almacenar todas las facturas
-df = pd.DataFrame()
+engine = create_engine("sqlite:///facturas.db")
 
-# Recorrer todas las carpetas dentro de la carpeta "facturas"
+# 🔍 Cargar archivos ya procesados
+try:
+    archivos_existentes = pd.read_sql(
+        "SELECT archivo FROM facturas", engine
+    )["archivo"].tolist()
+except:
+    archivos_existentes = []
+
+lista_df = []
+
+# Recorrer carpetas
 for carpeta in sorted(os.listdir("./facturas")):
     ruta_carpeta = os.path.join("./facturas/", carpeta)
 
-    # Recorrer todos los archivos dentro de la carpeta
+    if not os.path.isdir(ruta_carpeta):
+        continue
+
     for archivo in os.listdir(ruta_carpeta):
+
+        if not archivo.lower().endswith(".pdf"):
+            continue
+
         ruta_pdf = os.path.join(ruta_carpeta, archivo)
 
-        print(f"📄 Procesando factura: {ruta_pdf}")
+        # 🔥 VALIDACIÓN DUPLICADOS
+        if ruta_pdf in archivos_existentes:
+            print(f"⏭ Ya existe: {ruta_pdf}")
+            continue
 
-        # Extraer texto de la factura
-        texto_no_estructurado = funciones.extraer_texto_pdf(ruta_pdf)
+        print(f"📄 Procesando: {ruta_pdf}")
 
-        # Estructurar el texto de la factura
-        texto_estructurado = funciones.estructurar_texto(texto_no_estructurado)
+        try:
+            texto = funciones.extraer_texto_pdf(ruta_pdf)
+            csv = funciones.estructurar_texto(texto)
 
-        # Convertir texto estructurado en dataframe
-        df_factura = funciones.csv_a_dataframe(texto_estructurado)
+            if csv.strip().lower() == "error":
+                print(f"❌ Error IA: {ruta_pdf}")
+                continue
 
-        # Anexar el dataframe de la factura al dataframe general
-        df = pd.concat([df, df_factura], ignore_index=True)
+            df_factura = funciones.csv_a_dataframe(csv)
 
-    # Si la moneda es "dolares" convertir a euros multiplicando por 0,9243
-    df.loc[df["moneda"] == "dolares", "importe"] *= 0.9243
+            # 🔥 guardar identificador único
+            df_factura["archivo"] = ruta_pdf
+            df_factura["moneda"] = "cop"
 
-    # Eliminar las columnas no esenciales
-    df = df.iloc[:, 0:4]
+            lista_df.append(df_factura)
 
-# Guardar el DataFrame final en una bbdd sqlite
-# Crear una conexión a la base de datos SQLite
-engine = create_engine("sqlite:///facturas.db")
+        except Exception as e:
+            print(f"❌ Error procesando {ruta_pdf}: {e}")
+            continue
 
-# Guardar el DataFrame final en una bbdd sqlite, añadiendo los datos en lugar de reemplazarlos
-df.to_sql("facturas", engine, if_exists="append", index=False)
+# 🔥 concatenar una sola vez
+if lista_df:
+    df = pd.concat(lista_df, ignore_index=True)
 
-# Cerrar la conexión a la base de datos
+    # limpiar columnas
+    df = df[["fecha_factura", "proveedor", "concepto", "importe", "moneda", "archivo"]]
+
+    # evitar duplicados internos
+    df = df.drop_duplicates()
+
+    # guardar en DB
+    df.to_sql("facturas", engine, if_exists="append", index=False)
+
 engine.dispose()
 
-print("Proceso de extracción y estructuración de facturas completado exitosamente.")
-print("Datos guardados en la base de datos 'facturas.db'.")
+print("✅ Proceso completado. Datos guardados en facturas.db")
