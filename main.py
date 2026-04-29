@@ -68,7 +68,9 @@ if lista_df:
 
     # guardar en DB
     df.to_sql("facturas", engine, if_exists="append", index=False)
+    
+    print("✅ Proceso completado. Datos guardados en facturas.db")
 
+else:
+    print("⚠️ No se encontraron nuevas facturas para procesar.")
 engine.dispose()
-
-print("✅ Proceso completado. Datos guardados en facturas.db")
