@@ -117,7 +117,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Author
 
-[Your Full Name] - Data Analyst Portfolio Project
+Gean Franco Jacome - Data Analyst Portfolio Project
 
 For questions or collaborations, feel free to reach out.</content>
 <parameter name="filePath">README.md
