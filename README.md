@@ -1,123 +1,137 @@
-# FacturIA: Automated Invoice Data Extraction and Analysis
+# FacturIA 🧾🤖
+### Automated Invoice Data Extraction and Analysis
 
-## Overview
+> Extract, structure, and analyze invoice data from PDFs using AI —
+> turning unstructured documents into business-ready insights.
 
-FacturIA is a data analysis project that automates the extraction of key information from PDF invoices using Artificial Intelligence. The system processes invoices, structures the extracted data, and stores it in a SQLite database for further analysis. This project demonstrates skills in data extraction, AI integration (OpenAI API), data processing with Python, and data visualization using PowerBI.
+---
 
-As part of a data analyst portfolio, this tool showcases the ability to handle unstructured data from real-world documents, transform it into structured datasets, and enable business insights through automated workflows.
+## 📌 Overview
 
-## Features
+FacturIA automates the extraction of key information from PDF invoices
+using OpenAI's GPT-4o-mini model. The system processes invoices,
+structures the data, stores it in a SQLite database, and visualizes
+it through a Power BI dashboard — covering the full data pipeline
+from raw document to actionable insight.
 
-- **PDF Text Extraction**: Extracts text from PDF invoices using PyMuPDF.
-- **AI-Powered Data Structuring**: Utilizes OpenAI's GPT-4o-mini model to parse and structure invoice data into a standardized CSV format.
-- **Duplicate Prevention**: Checks for previously processed files to avoid redundant entries.
-- **Data Storage**: Saves extracted data to a SQLite database for persistence and querying.
-- **Data Cleaning**: Handles data types, numeric conversions, and removes duplicates.
-- **Visualization Ready**: Integrates with PowerBI for dashboard creation and analysis.
+Built as part of a data analyst portfolio to demonstrate real-world
+skills in data extraction, AI integration, Python processing, and
+business intelligence reporting.
 
-Extracted fields include:
-- Invoice date (formatted as dd/mm/yyyy)
-- Supplier name
-- Concept/description
-- Amount (with proper decimal formatting)
-- Currency (euros, dollars, or others)
+---
 
-## Prerequisites
+## ✨ Features
 
-- Python 3.8 or higher
-- OpenAI API key (required for data structuring)
+- 📄 **PDF Text Extraction** — Processes invoice files using PyMuPDF
+- 🤖 **AI-Powered Structuring** — GPT-4o-mini parses and standardizes invoice data into CSV format
+- 🔁 **Duplicate Prevention** — Tracks previously processed files to avoid redundant entries
+- 🗄️ **Data Storage** — Persists structured data in a SQLite database
+- 🧹 **Data Cleaning** — Handles data types, numeric conversions, and deduplication
+- 📊 **Power BI Dashboard** — Ready-to-use dashboard for visualization and business reporting
 
-## Installation
+**Extracted fields:**
+`Invoice Date` · `Supplier Name` · `Concept` · `Amount` · `Currency`
 
-1. Clone the repository:
-   ```
-   git clone https://github.com/yourusername/facturia.git
-   cd facturia
-   ```
+---
 
-2. Create a virtual environment:
-   ```
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
+## 🛠️ Tech Stack
 
-3. Install dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
+| Layer | Technology |
+|---|---|
+| Language | Python 3.8+ |
+| AI Model | OpenAI GPT-4o-mini |
+| Data Processing | Pandas · SQLAlchemy |
+| PDF Extraction | PyMuPDF (Fitz) |
+| Database | SQLite |
+| Visualization | Power BI |
+| Environment | Python-dotenv |
 
-4. Set up environment variables:
-   - Create a `.env` file in the root directory
-   - Add your OpenAI API key:
-     ```
-     OPENAI_API_KEY=your_openai_api_key_here
-     ```
+---
 
-## Usage
+## 🚀 Getting Started
 
-1. Place your PDF invoices in the `facturas/` directory. Organize them into subfolders if desired (e.g., `facturas/01_January/invoice.pdf`).
+### 1. Clone the repository
+```bash
+git clone https://github.com/gfranco7/facturia.git
+cd facturia
+```
 
-2. Run the main script:
-   ```
-   python main.py
-   ```
+### 2. Create a virtual environment
+```bash
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+```
 
-3. The script will process new PDFs, extract data, and append to the `facturas.db` database.
+### 3. Install dependencies
+```bash
+pip install -r requirements.txt
+```
 
-4. For visualization, open the PowerBI dashboard file (`PowerBI/Dashboard_FacturIA.pbix`) and connect to the `facturas.db` SQLite database.
+### 4. Set up environment variables
+Create a `.env` file in the root directory:
+```
+OPENAI_API_KEY=your_openai_api_key_here
+```
 
-## Database Schema
+### 5. Run the project
+Place your PDF invoices in the `facturas/` directory and run:
+```bash
+python main.py
+```
 
-The data is stored in a SQLite database (`facturas.db`) with a table named `facturas`. The schema includes:
-- `fecha_factura`: Invoice date (string)
-- `proveedor`: Supplier name (string)
-- `concepto`: Description (string)
-- `importe`: Amount (float)
-- `moneda`: Currency (string)
-- `archivo`: File path for reference (string)
+---
 
-## Technologies Used
+## 📂 Project Structure
 
-- **Python**: Core programming language
-- **OpenAI API**: For AI-powered text structuring
-- **Pandas**: Data manipulation and DataFrame handling
-- **SQLAlchemy**: Database interactions
-- **PyMuPDF (Fitz)**: PDF text extraction
-- **Python-dotenv**: Environment variable management
-- **PowerBI**: Data visualization and dashboard creation
+```
+facturia/
+├── main.py           # Main processing script
+├── funciones.py      # PDF extraction and structuring helpers
+├── prompt.py         # AI prompt for consistent data extraction
+├── requirements.txt  # Dependencies
+├── facturas/         # Input PDF invoices
+├── PowerBI/          # Power BI dashboard (.pbix)
+└── facturas.db       # Generated SQLite database
+```
 
-## Project Structure
+---
 
-- `main.py`: Main script for processing invoices
-- `funciones.py`: Helper functions for PDF extraction and data structuring
-- `prompt.py`: AI prompt for consistent data extraction
-- `requirements.txt`: Python dependencies
-- `facturas/`: Directory for PDF invoices
-- `PowerBI/`: PowerBI dashboard files
-- `facturas.db`: SQLite database (generated)
+## 🗃️ Database Schema
 
-## Limitations
+Table: `facturas`
 
-- Requires valid OpenAI API key
-- Currently supports Spanish/English invoice formats based on the prompt
-- PDF quality may affect extraction accuracy
-- Designed for Colombian Peso (COP) context but adaptable to other currencies
+| Field | Type | Description |
+|---|---|---|
+| `fecha_factura` | string | Invoice date (dd/mm/yyyy) |
+| `proveedor` | string | Supplier name |
+| `concepto` | string | Description |
+| `importe` | float | Amount |
+| `moneda` | string | Currency |
+| `archivo` | string | Source file path |
 
-## Future Enhancements
+---
 
-- Support for additional languages and formats
-- Web interface for uploading invoices
-- Integration with other visualization tools
-- Batch processing optimizations
-- Advanced error handling and logging
+## 🔮 Future Enhancements
 
-## License
+- 🌐 Web interface for invoice uploading
+- 🌍 Extended language and format support
+- 🔗 Integration with additional BI tools
+- ⚡ Batch processing optimizations
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+---
 
-## Author
+## 👤 Author
 
-Gean Franco Jacome - Data Analyst Portfolio Project
+**Gean Franco Jacome**
+Data Analyst & Full-Stack Developer
 
-For questions or collaborations, feel free to reach out.</content>
-<parameter name="filePath">README.md
+<a href="https://www.linkedin.com/in/geanfrancojacome/" target="_blank">
+<img src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/linked-in-alt.svg" height="20" width="25" />
+</a>
+📧 gfrancojacome710@gmail.com
+
+---
+
+## 📄 License
+
+MIT License — see [LICENSE](LICENSE) for details.
